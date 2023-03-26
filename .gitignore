@@ -1,6 +1,6 @@
-./*.tf
-./*.idf
-./*.xml
-./stemming
-./*.zip
-./LICENSE
+*.tf
+*.idf
+*.xml
+stemming
+*.zip
+LICENSE
