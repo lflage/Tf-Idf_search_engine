@@ -11,6 +11,8 @@ from lxml import etree
 from stemming.porter2 import stem
 from collections import Counter
 
+from pprint import pprint
+
 
 def pre_process(txt: str) -> list:
     """Receives a string of text, removes the punctuation, turns text into 
@@ -116,31 +118,34 @@ class SearchEngine:
                         file.write('{}\t{}\t{}\n'.format(doc_id, word, tf))
 
         if create == False:
+            # TODO: Fix
             with open(collectionName+'.tf', 'r') as file:
                 for line in file.readlines():
                     doc_id, term, tf = line.split('\t')
+                    tf = float(tf.strip())
+
                     if doc_id not in self.tf_dict.keys():
                         self.tf_dict[doc_id] = {}
+                        self.tf_dict[doc_id].update({term: tf})
                     else:
-                        self.tf_dict[doc_id].update({term: float(tf)})
+                        self.tf_dict[doc_id].update({term: tf})
                 self.n_docs = len(self.tf_dict)
 
             with open(collectionName+'.idf', 'r') as file:
                 for line in file.readlines():
                     term, idf = line.split('\t')
-                    self.idf_dict[term] = float(idf)
+                    self.idf_dict[term] = float(idf.strip())
         # TF-IDF
         self.word_to_ix = {key: value for key, value in zip(self.idf_dict.keys(),
                                                             range(len(self.idf_dict)))}
 
-        # TODO: change this to itarate over the TF dict {
-        for doc_id, text in corpus.items():
-            self.tf_idf[doc_id] = np.zeros(len(vocab))
+        for doc_id, term_tf_pair in self.tf_dict.items():
+            self.tf_idf[doc_id] = np.zeros(len(self.idf_dict))
 
-            for term in text:
+            for term, tf in term_tf_pair.items():
                 self.tf_idf[doc_id][self.word_to_ix[term]
-                                    ] = self.tf_dict[doc_id][term] * self.idf_dict[term]
-        # TODO: }
+                                    ] = tf * self.idf_dict[term]
+        #
         pass
 
     def executeQuery(self, queryTerms):
@@ -164,7 +169,7 @@ class SearchEngine:
         query_tf = tf_func(query)
 
         # Query TF-IDF
-        query_tf_idf = np.zeros(self.n_docs)
+        query_tf_idf = np.zeros(len(self.idf_dict))
 
         for term in query:
             query_tf_idf[self.word_to_ix[term]
@@ -178,7 +183,7 @@ class SearchEngine:
             if sim == 0:
                 continue
             else:
-                sim_dict.update({doc_id: top/bottom})
+                sim_dict.update({doc_id: sim})
 
         sim_dict = sorted(sim_dict.items(), reverse=True,
                           key=lambda item: item[1])
@@ -202,5 +207,5 @@ if __name__ == '__main__':
     '''
     # Example for how we might test your program:
     # Should also work with nyt199501 !
-    searchEngine = SearchEngine("nytsmall", create=False)
+    searchEngine = SearchEngine("nytsmall", create=True)
     print(searchEngine.executeQuery(['hurricane', 'philadelphia']))
