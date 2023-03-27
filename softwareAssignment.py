@@ -263,15 +263,5 @@ if __name__ == '__main__':
     '''
     # Example for how we might test your program:
     # Should also work with nyt199501 !
-    searchEngine = SearchEngine("nyt199501", create=True)
+    searchEngine = SearchEngine("nytsmall", create=True)
     searchEngine.executeQueryConsole()
-    # print(searchEngine.executeQuery(['hurricane', 'philadelphia']))
-    # searchEngine2 = SearchEngine("nytsmall", create=False)
-    # print(searchEngine2.executeQuery(['hurricane', 'philadelphia']))
-
-    # print(searchEngine.executeQuery(['atermnotinvocab']))
-
-    # searchEngine3 = SearchEngine("nytsmall", create=True)
-    # print(searchEngine3.executeQuery(['hurricane', 'philadelphia']))
-    # searchEngine4 = SearchEngine("nytsmall", create=False)
-    # print(searchEngine4.executeQuery(['hurricane', 'philadelphia']))
