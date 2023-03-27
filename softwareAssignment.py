@@ -86,6 +86,7 @@ class SearchEngine:
         self.tf_idf = {}
 
         if create == True:
+            print("Creating index files")
             # Read files into an lxml etree object
             tree = etree.parse(collectionName+".xml")
             # Gets root node so we can iterate over it
@@ -139,7 +140,10 @@ class SearchEngine:
                     for word, tf in w_tf_pair.items():
                         file.write('{}\t{}\t{}\n'.format(doc_id, word, tf))
 
+            print("Done creating indexes")
+
         if create == False:
+            print('Reading indexes from files')
             # Read .tf file of specified corpus
             with open(collectionName+'.tf', 'r') as file:
                 for line in file.readlines():
@@ -207,9 +211,13 @@ class SearchEngine:
         query_tf_idf = np.zeros(len(self.idf_dict))
 
         for term in query:
-            query_tf_idf[self.word_to_ix[term]
-                         ] = query_tf[term] * self.idf_dict[term]
+            try:
+                query_tf_idf[self.word_to_ix[term]
+                             ] = query_tf[term] * self.idf_dict[term]
+            except KeyError:
+                return []
 
+        # Calculate similarities by iterating over the tf_idf dict
         sim_dict = {}
         for doc_id, value in self.tf_idf.items():
             top = np.dot(query_tf_idf, value)
@@ -230,6 +238,19 @@ class SearchEngine:
         ask for queries and display the search results, until the user
         simply hits enter.
         '''
+        query = input("Please enter query, terms separated by whitespace: ")
+        while query != "":
+            result_list = self.executeQuery(query.split())
+            if len(result_list) == 0:
+                print("Sorry, I didn’t find any documents for this term.")
+            else:
+                print("I found the following documents:")
+                for doc_id, similarity in result_list:
+                    print("{} ({})".format(doc_id, similarity))
+
+            query = input(
+                "Please enter query, terms separated by whitespace: ")
+
         pass
 
 
@@ -242,7 +263,15 @@ if __name__ == '__main__':
     '''
     # Example for how we might test your program:
     # Should also work with nyt199501 !
-    searchEngine = SearchEngine("nytsmall", create=True)
-    print(searchEngine.executeQuery(['hurricane', 'philadelphia']))
-    searchEngine2 = SearchEngine("nytsmall", create=False)
-    print(searchEngine2.executeQuery(['hurricane', 'philadelphia']))
+    searchEngine = SearchEngine("nyt199501", create=True)
+    searchEngine.executeQueryConsole()
+    # print(searchEngine.executeQuery(['hurricane', 'philadelphia']))
+    # searchEngine2 = SearchEngine("nytsmall", create=False)
+    # print(searchEngine2.executeQuery(['hurricane', 'philadelphia']))
+
+    # print(searchEngine.executeQuery(['atermnotinvocab']))
+
+    # searchEngine3 = SearchEngine("nytsmall", create=True)
+    # print(searchEngine3.executeQuery(['hurricane', 'philadelphia']))
+    # searchEngine4 = SearchEngine("nytsmall", create=False)
+    # print(searchEngine4.executeQuery(['hurricane', 'philadelphia']))
