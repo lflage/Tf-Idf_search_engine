@@ -83,6 +83,7 @@ class SearchEngine:
         self.tf_dict = {}
         self.idf_dict = {}
         self.tf_idf = {}
+        self.word_to_ix = {}
 
         if create == True:
             print("Creating index files")
