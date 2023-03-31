@@ -5,3 +5,4 @@ stemming
 *.zip
 LICENSE
 __MACOSX
+*.ipynb
