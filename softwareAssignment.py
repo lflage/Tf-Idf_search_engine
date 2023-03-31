@@ -11,8 +11,6 @@ from lxml import etree
 from stemming.porter2 import stem
 from collections import Counter
 
-from pprint import pprint
-
 
 def pre_process(in_txt: str) -> list:
     """Receives a string of text, removes the punctuation, turns text into 
