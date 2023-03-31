@@ -3,7 +3,7 @@ Introduction to Python Programming (aka Programmierkurs I, aka Python I)
 Software Assignment
 '''
 
-import sys
+import argparse
 import string
 import math
 import numpy as np
@@ -31,11 +31,11 @@ def tf_func(text_list: list) -> dict:
     """ Returns a dictionary containing the word the its term frequency value
     as a key value par in a dict
 
-    text_list:<list> -: input text as a list
+    text_list:<list of str> -: input text as a list
     return_dict:<dict> -: key:value -> word:tf
     """
     return_dict = {}
-    # used Counter dictionary from the standar python lib
+    # used Counter dictionary from the standard python lib, <token>:token-count
     x = Counter(text_list)
     # uses the most_common() method to the get the top1 most common token
     max_occurence = x.most_common(1)[0][1]
@@ -50,8 +50,7 @@ def tf_func(text_list: list) -> dict:
 
 def idf_func(vocab: dict, corpus_len: int) -> dict:
     """Function to calculate IDF over vocab dict. The vocab dict is a dict
-    that contains the doc IDs as keys and the text as a list of tokens in its
-    values
+    that contains the term as keys and the number of documents it appears 
 
     vocab:<dict>        -: consists of doc_id:list of tokens in the doc
     corpus_len:<int>    -: number of documents in the corpus
@@ -261,7 +260,17 @@ if __name__ == '__main__':
     * start the loop asking for query terms
     * program should quit if users enters no term and simply hits enter
     '''
+
+    parser = argparse.ArgumentParser(
+        description='''Command line tool to run a Query on a Collection of
+    documents using TF-IDF similarity search''',)
+    parser.add_argument('-collection', type=str, default='nytsmall.xml',
+                        help='Name of the collection without file extension')
+    parser.add_argument('-create', type=bool, default=False,
+                        help='''True = creates the index files, False=reads from
+                        index file''')
     # Example for how we might test your program:
     # Should also work with nyt199501 !
-    searchEngine = SearchEngine("nytsmall", create=True)
+    args = parser.parse_args()
+    searchEngine = SearchEngine(args.collection, create=args.create)
     searchEngine.executeQueryConsole()
